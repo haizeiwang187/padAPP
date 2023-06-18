@@ -1,0 +1,206 @@
+ "use strict";
+        var r, n, i, c;
+        a.r(t),
+        a.d(t, {
+            arrayify: function() {
+                return w
+            },
+            concat: function() {
+                return M
+            },
+            hexConcat: function() {
+                return C
+            },
+            hexDataLength: function() {
+                return I
+            },
+            hexDataSlice: function() {
+                return O
+            },
+            hexStripZeros: function() {
+                return P
+            },
+            hexValue: function() {
+                return R
+            },
+            hexZeroPad: function() {
+                return T
+            },
+            hexlify: function() {
+                return A
+            },
+            isBytes: function() {
+                return _
+            },
+            isBytesLike: function() {
+                return y
+            },
+            isHexString: function() {
+                return S
+            },
+            joinSignature: function() {
+                return z
+            },
+            splitSignature: function() {
+                return N
+            },
+            stripZeros: function() {
+                return k
+            },
+            zeroPad: function() {
+                return E
+            }
+        });
+        let f = !1
+          , d = !1
+          , s = {
+            debug: 1,
+            default: 2,
+            info: 2,
+            warning: 3,
+            error: 4,
+            off: 5
+        }
+          , o = s.default
+          , u = null
+          , b = function() {
+            try {
+                let e = [];
+                if (["NFD", "NFC", "NFKD", "NFKC"].forEach(t=>{
+                    try {
+                        if ("test" !== "test".normalize(t))
+                            throw Error("bad normalize")
+                    } catch (a) {
+                        e.push(t)
+                    }
+                }
+                ),
+                e.length)
+                    throw Error("missing " + e.join(", "));
+                if (String.fromCharCode(233).normalize("NFD") !== String.fromCharCode(101, 769))
+                    throw Error("broken implementation")
+            } catch (e) {
+                return e.message
+            }
+            return null
+        }();
+        (i = r || (r = {})).DEBUG = "DEBUG",
+        i.INFO = "INFO",
+        i.WARNING = "WARNING",
+        i.ERROR = "ERROR",
+        i.OFF = "OFF",
+        (c = n || (n = {})).UNKNOWN_ERROR = "UNKNOWN_ERROR",
+        c.NOT_IMPLEMENTED = "NOT_IMPLEMENTED",
+        c.UNSUPPORTED_OPERATION = "UNSUPPORTED_OPERATION",
+        c.NETWORK_ERROR = "NETWORK_ERROR",
+        c.SERVER_ERROR = "SERVER_ERROR",
+        c.TIMEOUT = "TIMEOUT",
+        c.BUFFER_OVERRUN = "BUFFER_OVERRUN",
+        c.NUMERIC_FAULT = "NUMERIC_FAULT",
+        c.MISSING_NEW = "MISSING_NEW",
+        c.INVALID_ARGUMENT = "INVALID_ARGUMENT",
+        c.MISSING_ARGUMENT = "MISSING_ARGUMENT",
+        c.UNEXPECTED_ARGUMENT = "UNEXPECTED_ARGUMENT",
+        c.CALL_EXCEPTION = "CALL_EXCEPTION",
+        c.INSUFFICIENT_FUNDS = "INSUFFICIENT_FUNDS",
+        c.NONCE_EXPIRED = "NONCE_EXPIRED",
+        c.REPLACEMENT_UNDERPRICED = "REPLACEMENT_UNDERPRICED",
+        c.UNPREDICTABLE_GAS_LIMIT = "UNPREDICTABLE_GAS_LIMIT",
+        c.TRANSACTION_REPLACED = "TRANSACTION_REPLACED",
+        c.ACTION_REJECTED = "ACTION_REJECTED";
+        let h = "0123456789abcdef";
+        class l {
+            constructor(e) {
+                Object.defineProperty(this, "version", {
+                    enumerable: !0,
+                    value: e,
+                    writable: !1
+                })
+            }
+            _log(e, t) {
+                let a = e.toLowerCase();
+                null == s[a] && this.throwArgumentError("invalid log level name", "logLevel", e),
+                o > s[a] || console.log.apply(console, t)
+            }
+            debug(...e) {
+                this._log(l.levels.DEBUG, e)
+            }
+            info(...e) {
+                this._log(l.levels.INFO, e)
+            }
+            warn(...e) {
+                this._log(l.levels.WARNING, e)
+            }
+            makeError(e, t, a) {
+                if (d)
+                    return this.makeError("censored error", t, {});
+                t || (t = l.errors.UNKNOWN_ERROR),
+                a || (a = {});
+                let r = [];
+                Object.keys(a).forEach(e=>{
+                    let t = a[e];
+                    try {
+                        if (t instanceof Uint8Array) {
+                            let a = "";
+                            for (let e = 0; e < t.length; e++)
+                                a += h[t[e] >> 4] + h[15 & t[e]];
+                            r.push(e + "=Uint8Array(0x" + a + ")")
+                        } else
+                            r.push(e + "=" + JSON.stringify(t))
+                    } catch (t) {
+                        r.push(e + "=" + JSON.stringify(a[e].toString()))
+                    }
+                }
+                ),
+                r.push(`code=${t}`),
+                r.push(`version=${this.version}`);
+                let i = e
+                  , c = "";
+                switch (t) {
+                case n.NUMERIC_FAULT:
+                    {
+                        c = "NUMERIC_FAULT";
+                        let t = e;
+                        switch (t) {
+                        case "overflow":
+                        case "underflow":
+                        case "division-by-zero":
+                            c += "-" + t;
+                            break;
+                        case "negative-power":
+                        case "negative-width":
+                            c += "-unsupported";
+                            break;
+                        case "unbound-bitwise-result":
+                            c += "-unbound-result"
+                        }
+                        break
+                    }
+                case n.CALL_EXCEPTION:
+                case n.INSUFFICIENT_FUNDS:
+                case n.MISSING_NEW:
+                case n.NONCE_EXPIRED:
+                case n.REPLACEMENT_UNDERPRICED:
+                case n.TRANSACTION_REPLACED:
+                case n.UNPREDICTABLE_GAS_LIMIT:
+                    c = t
+                }
+                c && (e += " [ See: https://links.ethers.org/v5-errors-" + c + " ]"),
+                r.length && (e += " (" + r.join(", ") + ")");
+                let f = Error(e);
+                return f.reason = i,
+                f.code = t,
+                Object.keys(a).forEach(function(e) {
+                    f[e] = a[e]
+                }),
+                f
+            }
+            throwError(e, t, a) {
+                throw this.makeError(e, t, a)
+            }
+            throwArgumentError(e, t, a) {
+                return this.throwError(e, l.errors.INVALID_ARGUMENT, {
+                    argument: t,
+                    value: a
+                })
+            }
